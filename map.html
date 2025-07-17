@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="images/logo.png" />
+    <title>Maps Tracking</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="map.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+  </head>
+  <body>
+    <div class="menu-header">
+      <!-- Device name -->
+      <div class="device-container">
+        <label for="deviceName" class="device-label">Thiết bị</label>
+        <select id="deviceSelect" class="device-select">
+          <option value="null">---Chọn thiết bị---</option>
+        </select>
+      </div>
+      <div class="date-container">
+        <!-- Date -->
+        <label for="date" class="date-label">Ngày</label>
+        <input type="date" id="date" />
+      </div>
+      <button id="btnViewLocation" class="view-location" disabled>
+        View location
+      </button>
+    </div>
+    <div id="map"></div>
+    <!-- Thư viện JavaScript Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

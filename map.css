@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+h2.title {
+  font-weight: bold;
+  color: black;
+}
+#map {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  z-index: 1;
+}
+.menu-header {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: fixed;
+  top: 15px;
+  left: 55px;
+  z-index: 10;
+}
+.menu-header .device-container {
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+}
+.menu-header .date-container {
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.25);
+}
+.menu-header .device-container .device-label {
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.menu-header .date-container .date-label {
+  font-weight: bold;
+  padding-right: 10px;
+}
