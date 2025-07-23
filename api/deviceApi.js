@@ -5,9 +5,9 @@ const deviceApi = {
     const url = "/devices";
     return axioslient.get(url);
   },
-  getDeviceLocationByDate(id, date) {
-    const url = `/device-location/${id}/${date}`;
-    return axioslient.get(url);
+  getDeviceLocationByDate(deviceID, date) {
+    const url = `/locations/`;
+    return axioslient.get(url, { params: { deviceID, date } });
   },
 };
 

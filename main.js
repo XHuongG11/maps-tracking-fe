@@ -19,6 +19,15 @@ const btnView = document.getElementById("btnViewLocation");
 var markers = [];
 var polyline = undefined;
 
+// enum type marker
+const ETypeMarker = {
+  1: "red-marker",
+  2: "blue-marker",
+  3: "pink-marker",
+  4: "yellow-marker",
+  5: "green-marker",
+};
+
 // load devices
 function loadDevices() {
   deviceApi
@@ -27,7 +36,7 @@ function loadDevices() {
       console.log(response);
       response.forEach((d) => {
         const option = document.createElement("option");
-        option.value = d.id;
+        option.value = d.deviceID;
         option.textContent = d.name;
         deviceSelect.appendChild(option);
       });
@@ -39,7 +48,7 @@ function loadDevices() {
 document.onload = loadDevices();
 
 // set ngày hiện tại cho date
-const today = new Date().toISOString().split("T")[0];
+const today = new Date("2025-07-02").toISOString().split("T")[0];
 calendar.value = today;
 
 // gọi api tìm kiếm device location
@@ -66,13 +75,40 @@ btnView.onclick = async () => {
     var latLngArr = [];
 
     locations.forEach((location) => {
-      latLngArr.push([location.latitude, location.longitude]);
+      const latitude = location.latitude;
+      const longitude = location.longitude;
 
-      markers.push(
-        L.marker([location.latitude, location.longitude])
-          .addTo(map)
-          .bindPopup(`Time: ${location.timestamp}`)
-      );
+      latLngArr.push([latitude, longitude]);
+
+      var markerIcon = L.icon({
+        iconUrl: `images/${ETypeMarker[location.type]}.png`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+        shadowUrl: "images/shadow-marker.png",
+        shadowSize: [18, 16],
+        shadowAnchor: [0, 16],
+      });
+
+      if (location.linkInfo != null)
+        markers.push(
+          L.marker([latitude, longitude], {
+            icon: markerIcon,
+          }).addTo(map).bindPopup(`${location.title}.
+            <a href=${location.linkInfo} target="_blank" style="text-decoration: underline; color: blue;">
+            LinkInfo.</a>
+            <a href=https://www.google.com/maps?q=${latitude},${longitude} target="_blank" style="text-decoration: underline; color: blue;">
+            LinkGGMaps</a>
+            `)
+        );
+      else
+        markers.push(
+          L.marker([location.latitude, location.longitude], {
+            icon: markerIcon,
+          }).addTo(map).bindPopup(`${location.title}.
+               <a href=https://www.google.com/maps?q=${latitude},${longitude} target="_blank" style="text-decoration: underline; color: blue;">
+            GoogleMaps</a>`)
+        );
     });
 
     // polyline = L.polyline(latLngArr, { color: "red" }).addTo(map);

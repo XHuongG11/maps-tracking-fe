@@ -1,7 +1,7 @@
 import axios from "https://esm.sh/axios@1.6.7";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:5274/maps-tracking/api/",
+  baseURL: "http://localhost:5274/api/",
   timeout: 1000,
   headers: { "Content-Type": "application/json" },
 });
