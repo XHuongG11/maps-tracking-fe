@@ -1,14 +1,10 @@
-import axioslient from "./axiosClient.js";
-
-const deviceApi = {
+window.deviceApi = {
   getDevices() {
     const url = "/devices";
-    return axioslient.get(url);
+    return axiosClient.get(url);
   },
   getDeviceLocationByDate(deviceID, date) {
     const url = `/locations/`;
-    return axioslient.get(url, { params: { deviceID, date } });
+    return axiosClient.get(url, { params: { deviceID, date } });
   },
 };
-
-export default deviceApi;

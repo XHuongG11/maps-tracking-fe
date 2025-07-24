@@ -1,6 +1,4 @@
-import axios from "https://esm.sh/axios@1.6.7";
-
-const axiosClient = axios.create({
+window.axiosClient = axios.create({
   baseURL: "http://localhost:5274/api/",
   timeout: 1000,
   headers: { "Content-Type": "application/json" },
@@ -31,5 +29,3 @@ axiosClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default axiosClient;
