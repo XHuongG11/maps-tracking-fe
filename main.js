@@ -17,7 +17,6 @@ var deviceSelect = document.getElementById("deviceSelect");
 const calendar = document.getElementById("date");
 const btnView = document.getElementById("btnViewLocation");
 var markers = [];
-var polyline = undefined;
 
 // enum type marker
 const ETypeMarker = {
@@ -55,7 +54,6 @@ calendar.value = today;
 btnView.onclick = async () => {
   // remove markers and polylines
   markers.forEach((marker) => marker.remove());
-  if (polyline != undefined) polyline.remove();
 
   try {
     const deviceID = deviceSelect.value;
@@ -72,13 +70,9 @@ btnView.onclick = async () => {
       return;
     }
 
-    var latLngArr = [];
-
     locations.forEach((location) => {
       const latitude = location.latitude;
       const longitude = location.longitude;
-
-      latLngArr.push([latitude, longitude]);
 
       var markerIcon = L.icon({
         iconUrl: `images/${ETypeMarker[location.type]}.png`,
@@ -98,7 +92,7 @@ btnView.onclick = async () => {
             <a href=${location.linkInfo} target="_blank" style="text-decoration: underline; color: blue;">
             LinkInfo.</a>
             <a href=https://www.google.com/maps?q=${latitude},${longitude} target="_blank" style="text-decoration: underline; color: blue;">
-            LinkGGMaps</a>
+            GoogleMaps</a>
             `)
         );
       else
@@ -110,8 +104,6 @@ btnView.onclick = async () => {
             GoogleMaps</a>`)
         );
     });
-
-    // polyline = L.polyline(latLngArr, { color: "red" }).addTo(map);
   } catch (error) {
     console.log(error);
   }
