@@ -16,9 +16,34 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"
+    />
   </head>
   <body>
     <div class="menu-header">
+      <!-- Type map -->
+      <div class="type-map-container">
+        <strong>Map </strong>
+        <select name="typeMap" id="typeMap">
+          <option value="openstreetmap" selected>Open Street Map</option>
+          <option value="maptiler">Map Tiler</option>
+          <option value="cartobasemaps">Carto Basemaps</option>
+        </select>
+      </div>
+      <!-- Type view -->
+      <div class="type-view-container">
+        <strong>View </strong>
+        <select name="typeView" id="typeView">
+          <option value="discrete">Rời rạc</option>
+          <option value="group">Gom nhóm</option>
+        </select>
+      </div>
       <!-- Device name -->
       <div class="device-container">
         <label for="deviceName" class="device-label">Thiết bị</label>
@@ -31,6 +56,21 @@
         <label for="date" class="date-label">Ngày</label>
         <input type="date" id="date" />
       </div>
+
+      <div class="type-container">
+        <strong>Type </strong>
+        <input type="checkbox" id="1" name="1" value="1" />
+        <label for="1">1</label>
+        <input type="checkbox" id="2" name="2" value="2" />
+        <label for="2">2</label>
+        <input type="checkbox" id="3" name="3" value="3" />
+        <label for="3">3</label>
+        <input type="checkbox" id="4" name="4" value="4" />
+        <label for="4">4</label>
+        <input type="checkbox" id="5" name="5" value="5" />
+        <label for="5">5</label>
+      </div>
+
       <button id="btnViewLocation" class="view-location" disabled>
         View location
       </button>
@@ -38,6 +78,10 @@
     <div id="map"></div>
     <!-- Thư viện JavaScript Leaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/rbush@3.0.1/rbush.js"></script>
+    <script src="./leaflet-markers-canvas.js"></script>
+    <script src="https://unpkg.com/leaflet.glify/dist/glify-browser.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="./api/axiosClient.js"></script>

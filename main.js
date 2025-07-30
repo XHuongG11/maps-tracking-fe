@@ -1,18 +1,53 @@
-// Khởi tạo bản đồ, đặt tâm ở HCM
-const map = L.map("map").setView([10.762622, 106.660172], 15);
+// load map
+let map;
+function loadMap(type) {
+  if (map) {
+    map.remove();
+    map = null;
+  }
+  if (type === "openstreetmap") {
+    // Khởi tạo bản đồ, đặt tâm ở HCM
+    map = L.map("map").setView([10.762622, 106.660172], 15);
+    // Thêm lớp bản đồ nền
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(map);
+  } else if (type === "maptiler") {
+    map = L.map("map").setView([10.762622, 106.660172], 15);
+    L.tileLayer(
+      "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=rGCv98tSlmgeHTMD0HJz",
+      {
+        attribution:
+          '<a href="https://www.maptiler.com/copyright/">MapTiler</a> ' +
+          '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+        maxZoom: 20,
+      }
+    ).addTo(map);
+  } else if (type === "cartobasemaps") {
+    map = L.map("map").setView([10.762622, 106.660172], 15);
 
-// Thêm lớp bản đồ nền
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution:
-    '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-}).addTo(map);
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 20,
+      }
+    ).addTo(map);
+  }
+}
+const typeMapSelected = document.getElementById("typeMap");
+typeMapSelected.addEventListener("change", () => {
+  loadMap(typeMapSelected.value);
+});
 
 // elements
 var deviceSelect = document.getElementById("deviceSelect");
 const calendar = document.getElementById("date");
 const btnView = document.getElementById("btnViewLocation");
-var markers = [];
 
 // enum type marker
 const EMarkerType = {
@@ -81,6 +116,7 @@ function loadDevices() {
     });
 }
 document.onload = loadDevices();
+document.onload = loadMap(typeMapSelected.value);
 
 // set ngày hiện tại cho date
 const today = new Date("2025-07-02").toISOString().split("T")[0];
@@ -106,15 +142,95 @@ function convertLocationsToGeoJSON(locations) {
   };
 }
 
+function drawByCluster(data) {
+  markersCluster = L.markerClusterGroup();
+
+  const geoJsonLayer = L.geoJSON(data, {
+    pointToLayer: (feature, latlng) => {
+      const type = feature.properties.type;
+      const icon = EMarkerType[type];
+
+      return L.marker(latlng, { icon });
+    },
+    onEachFeature: (feature, layer) => {
+      const { title, linkInfo } = feature.properties;
+      const link = linkInfo
+        ? `<a href="${linkInfo}" target="_blank" style="text-decoration: underline; color: blue;">Link info</a><br>`
+        : "";
+      const content = `${title}. ${link}`;
+      layer.bindPopup(content);
+      markers.push(layer);
+    },
+  });
+
+  markersCluster.addLayer(geoJsonLayer);
+  map.addLayer(markersCluster);
+
+  map.fitBounds(markersCluster.getBounds());
+}
+function drawByCanvas(data) {
+  markersCanvas = new L.MarkersCanvas();
+
+  markersCanvas.addTo(map);
+
+  const markers = data.features.map((feature) => {
+    const [lng, lat] = feature.geometry.coordinates;
+    const icon = EMarkerType[feature.properties.type];
+    const { title, linkInfo } = feature.properties;
+    const link = linkInfo
+      ? `<a href="${linkInfo}" target="_blank" style="text-decoration: underline; color: blue;">Link info</a><br>`
+      : "";
+    const content = `${title}. ${link}`;
+    return L.marker([lat, lng], { icon }).bindPopup(content);
+  });
+
+  markersCanvas.addMarkers(markers);
+
+  // Zoom map đến vùng có marker
+  const bounds = L.latLngBounds(markers.map((m) => m.getLatLng()));
+  map.fitBounds(bounds);
+}
+function resetLayers() {
+  if (markersCluster) {
+    map.removeLayer(markersCluster);
+    markersCluster = null;
+  }
+  if (markersCanvas) {
+    map.removeLayer(markersCanvas);
+    markersCanvas = null;
+  }
+}
+
+let markersCanvas;
+let markersCluster;
+let markers = [];
+let geoJsonLayer;
+
 btnView.onclick = async () => {
-  // Xoá các marker cũ nếu có
+  // Xoá layer và các marker cũ nếu có
+  resetLayers();
+  if (geoJsonLayer) map.removeLayer(geoJsonLayer);
   markers.forEach((marker) => marker.remove());
   markers = [];
 
   try {
     const deviceID = deviceSelect.value;
     const date = calendar.value;
-    const locations = await deviceApi.getDeviceLocationByDate(deviceID, date);
+
+    const checkboxes = document.querySelectorAll(
+      ".type-container input[type=checkbox]"
+    );
+    let types = Array.from(checkboxes)
+      .filter((c) => c.checked)
+      .map((c) => c.value);
+
+    if (types.length === 0) types = ["1", "2", "3", "4", "5"];
+
+    const locations = await deviceApi.getDeviceLocationByDate(
+      deviceID,
+      date,
+      types
+    );
 
     if (locations.length === 0) {
       Toastify({
@@ -129,25 +245,11 @@ btnView.onclick = async () => {
 
     const geojson = convertLocationsToGeoJSON(locations);
 
-    const geoJsonLayer = L.geoJSON(geojson, {
-      pointToLayer: (feature, latlng) => {
-        const type = feature.properties.type || "default";
-        const icon = EMarkerType[type];
+    // Type view
+    const typeView = document.getElementById("typeView").value;
 
-        return L.marker(latlng, { icon });
-      },
-      onEachFeature: (feature, layer) => {
-        const { title, linkInfo, latitude, longitude } = feature.properties;
-        const link = linkInfo
-          ? `<a href="${linkInfo}" target="_blank" style="text-decoration: underline; color: blue;">Link info</a><br>`
-          : "";
-        const content = `${title}. ${link}`;
-        layer.bindPopup(content);
-        markers.push(layer);
-      },
-    });
-
-    geoJsonLayer.addTo(map);
+    if (typeView == "group") drawByCluster(geojson);
+    else drawByCanvas(geojson);
   } catch (error) {
     console.error(error);
   }

@@ -3,8 +3,12 @@ window.deviceApi = {
     const url = "/devices";
     return axiosClient.get(url);
   },
-  getDeviceLocationByDate(deviceID, date) {
-    const url = `/locations/`;
-    return axiosClient.get(url, { params: { deviceID, date } });
+  getDeviceLocationByDate(deviceID, date, types) {
+    let query = `deviceID=${deviceID}&date=${date}`;
+    types.forEach((t) => {
+      query += `&types=${t}`;
+    });
+    const url = `/locations?${query}`;
+    return axiosClient.get(url);
   },
 };

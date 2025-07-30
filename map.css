@@ -40,8 +40,39 @@ h2.title {
   font-weight: bold;
   padding-right: 10px;
 }
-
+.menu-header .type-container {
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.25);
+}
 .menu-header .date-container .date-label {
   font-weight: bold;
   padding-right: 10px;
+}
+
+.menu-header .view-location {
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: white;
+}
+.menu-header .view-location:hover {
+  background-color: rgb(234, 233, 233);
+}
+
+.menu-header .type-map-container {
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.25);
+}
+
+.menu-header .type-view-container {
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.25);
 }
