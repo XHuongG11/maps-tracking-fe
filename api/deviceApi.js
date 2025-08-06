@@ -11,4 +11,13 @@ window.deviceApi = {
     const url = `/locations?${query}`;
     return axiosClient.get(url);
   },
+  login(username, PIN) {
+    const data = { username: username, PIN: PIN };
+    const url = "/login";
+    return axiosClient.post(url, data);
+  },
+  authenticate() {
+    url = "/authenticate";
+    return axiosClient.get(url);
+  },
 };

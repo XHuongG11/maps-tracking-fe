@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="images/logo.png" />
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="image-section">
+        <img
+          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+          alt="User Image"
+        />
+      </div>
+      <div class="form-section">
+        <div class="logo">
+          <img class="logo-img" src="/images/logo.png" />
+          <span>Maps Tracking</span>
+        </div>
+        <h2>Sign into your account</h2>
+        <div class="error-message" id="error" name="error"></div>
+        <form id="signin-form">
+          <input
+            type="username"
+            id="username"
+            placeholder="Username"
+            required
+          />
+          <input type="PIN" id="PIN" placeholder="PIN" required />
+          <button type="submit">LOGIN</button>
+          <a href="#" class="forgot">Forgot password?</a>
+          <p class="register">
+            <strong>Don't have an account?</strong>
+            <a href="#">Register here</a>
+          </p>
+          <p class="terms">
+            <a href="#">Terms of use</a>. <a href="#">Privacy policy</a>
+          </p>
+        </form>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./api/axiosClient.js"></script>
+    <script src="./api/deviceApi.js"></script>
+    <script>
+      const error = document.getElementById("error");
+      function login(username, PIN) {
+        deviceApi
+          .login(username, PIN)
+          .then((res) => {
+            window.location.href = "map.html";
+          })
+          .catch((err) => {
+            if (err.status == 404) error.innerHTML = "User not found";
+            else if (err.status == 400) error.innerHTML = "PIN is incorrect";
+            else {
+              error.innerHTML = "Lỗi không xác định.";
+            }
+          });
+      }
+      const loginForm = document.getElementById("signin-form");
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const username = loginForm.elements["username"].value;
+        const PIN = loginForm.elements["PIN"].value;
+        login(username, PIN);
+      });
+    </script>
+  </body>
+</html>

@@ -4,6 +4,7 @@ function loadMap(type) {
   if (map) {
     map.remove();
     map = null;
+    console.log("revome");
   }
   if (type === "openstreetmap") {
     // Khởi tạo bản đồ, đặt tâm ở HCM
@@ -52,7 +53,7 @@ const btnView = document.getElementById("btnViewLocation");
 // enum type marker
 const EMarkerType = {
   1: L.icon({
-    iconUrl: `images/red-marker.png`,
+    iconUrl: `images/blue-marker.png`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
@@ -61,7 +62,7 @@ const EMarkerType = {
     shadowAnchor: [0, 16],
   }),
   2: L.icon({
-    iconUrl: `images/blue-marker.png`,
+    iconUrl: `images/green-marker.png`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
@@ -88,7 +89,7 @@ const EMarkerType = {
     shadowAnchor: [0, 16],
   }),
   5: L.icon({
-    iconUrl: `images/green-marker.png`,
+    iconUrl: `images/red-marker.png`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
@@ -115,6 +116,12 @@ function loadDevices() {
       console.log(error);
     });
 }
+document.onload = deviceApi
+  .authenticate()
+  .then()
+  .catch((err) => {
+    window.location.href = "login.html";
+  });
 document.onload = loadDevices();
 document.onload = loadMap(typeMapSelected.value);
 
@@ -145,7 +152,7 @@ function convertLocationsToGeoJSON(locations) {
 function drawByCluster(data) {
   markersCluster = L.markerClusterGroup();
 
-  const geoJsonLayer = L.geoJSON(data, {
+  geoJsonLayer = L.geoJSON(data, {
     pointToLayer: (feature, latlng) => {
       const type = feature.properties.type;
       const icon = EMarkerType[type];
@@ -173,7 +180,7 @@ function drawByCanvas(data) {
 
   markersCanvas.addTo(map);
 
-  const markers = data.features.map((feature) => {
+  markers = data.features.map((feature) => {
     const [lng, lat] = feature.geometry.coordinates;
     const icon = EMarkerType[feature.properties.type];
     const { title, linkInfo } = feature.properties;
@@ -190,14 +197,15 @@ function drawByCanvas(data) {
   const bounds = L.latLngBounds(markers.map((m) => m.getLatLng()));
   map.fitBounds(bounds);
 }
+
 function resetLayers() {
+  if (geoJsonLayer) map.removeLayer(geoJsonLayer);
   if (markersCluster) {
     map.removeLayer(markersCluster);
     markersCluster = null;
   }
   if (markersCanvas) {
-    map.removeLayer(markersCanvas);
-    markersCanvas = null;
+    markersCanvas.removeMarkers(markers);
   }
 }
 
@@ -209,9 +217,6 @@ let geoJsonLayer;
 btnView.onclick = async () => {
   // Xoá layer và các marker cũ nếu có
   resetLayers();
-  if (geoJsonLayer) map.removeLayer(geoJsonLayer);
-  markers.forEach((marker) => marker.remove());
-  markers = [];
 
   try {
     const deviceID = deviceSelect.value;

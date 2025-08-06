@@ -1,11 +1,18 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('leaflet'), require('rbush')) :
-  typeof define === 'function' && define.amd ? define(['leaflet', 'rbush'], factory) :
-  (global = global || self, factory(global.L, global.RBush));
-}(this, (function (L, RBush) { 'use strict';
+  typeof exports === "object" && typeof module !== "undefined"
+    ? factory(require("leaflet"), require("rbush"))
+    : typeof define === "function" && define.amd
+    ? define(["leaflet", "rbush"], factory)
+    : ((global = global || self), factory(global.L, global.RBush));
+})(this, function (L, RBush) {
+  "use strict";
 
-  L = L && Object.prototype.hasOwnProperty.call(L, 'default') ? L['default'] : L;
-  RBush = RBush && Object.prototype.hasOwnProperty.call(RBush, 'default') ? RBush['default'] : RBush;
+  L =
+    L && Object.prototype.hasOwnProperty.call(L, "default") ? L["default"] : L;
+  RBush =
+    RBush && Object.prototype.hasOwnProperty.call(RBush, "default")
+      ? RBush["default"]
+      : RBush;
 
   var markersCanvas = {
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -110,27 +117,25 @@
       this._positionsTree.load(positionBoxes);
     },
 
-    removeMarker: function removeMarker(marker) {
+    removeMarker: function (marker) {
       var latLng = marker.getLatLng();
-      var isVisible = this._map.getBounds().contains(latLng);
-
-      var positionBox = {
+      var result = this._positionsTree.search({
         minX: latLng.lng,
         minY: latLng.lat,
         maxX: latLng.lng,
         maxY: latLng.lat,
-        marker: marker,
-      };
-
-      this._positionsTree.remove(positionBox, function (a, b) {
-        return a.marker._leaflet_id === b.marker._leaflet_id;
       });
 
-      if (isVisible) {
+      result.forEach((box) => {
+        if (box.marker._leaflet_id === marker._leaflet_id) {
+          this._positionsTree.remove(box);
+        }
+      });
+
+      if (this._map.getBounds().contains(latLng)) {
         this._redraw(true);
       }
     },
-
     // remove multiple markers (better for rBush performance)
     removeMarkers: function removeMarkers(markers) {
       var this$1 = this;
@@ -232,7 +237,7 @@
 
       L.DomUtil.addClass(
         this._canvas,
-        ("leaflet-zoom-" + (isAnimated ? "animated" : "hide"))
+        "leaflet-zoom-" + (isAnimated ? "animated" : "hide")
       );
     },
 
@@ -286,7 +291,11 @@
 
       this._markers.push(marker);
 
-      return { markerBox: markerBox, positionBox: positionBox, isVisible: isVisible };
+      return {
+        markerBox: markerBox,
+        positionBox: positionBox,
+        isVisible: isVisible,
+      };
     },
 
     _drawMarker: function _drawMarker(marker, ref) {
@@ -361,7 +370,9 @@
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
       }
 
-      if (!this._map || !this._positionsTree) { return; }
+      if (!this._map || !this._positionsTree) {
+        return;
+      }
 
       var mapBounds = this._map.getBounds();
       var mapBoundsBox = {
@@ -420,7 +431,9 @@
     },
 
     _fire: function _fire(event) {
-      if (!this._markersTree) { return; }
+      if (!this._markersTree) {
+        return;
+      }
 
       var ref = event.containerPoint;
       var x = ref.x;
@@ -481,5 +494,4 @@
   };
 
   L.MarkersCanvas = L.Layer.extend(markersCanvas);
-
-})));
+});
